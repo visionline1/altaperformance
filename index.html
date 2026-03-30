@@ -108,7 +108,7 @@
                         <input type="number" id="pSolar" placeholder="Óculos Solar" oninput="calcTudo()">
                         <input type="number" id="pKit" placeholder="Kits Limpa" oninput="calcTudo()">
                         <input type="number" id="pGrife" placeholder="Armação Grife" oninput="calcTudo()">
-                        <input type="number" id="pGrife" placeholder="Armação Propria" oninput="calcTudo()">
+                        <input type="number" id="pGrife" placeholder="Marca Propria" oninput="calcTudo()">
                         <input type="number" id="pSeguro" placeholder="Seguros" oninput="calcTudo()">
                     </div>
                     <button class="btn btn-main" onclick="enviarDados()">SALVAR REGISTRO</button>
@@ -274,12 +274,13 @@
         const solar = parseInt(document.getElementById('pSolar').value || 0);
         const kit = parseInt(document.getElementById('pKit').value || 0);
         const grife = parseInt(document.getElementById('pGrife').value || 0);
+        const grife = parseInt(document.getElementById('pMarcaPropria').value || 0);
         const seguro = parseInt(document.getElementById('pSeguro').value || 0);
         const totalOculos = grau + solar;
 
         let html = [];
         if(nComp > 0) html.push(`<div class="loss-item">📉 R$ ${(nComp * 500).toLocaleString('pt-BR')} perdidos (${nComp} s/ compra)</div>`);
-        if(grife < grau) html.push(`<div class="loss-item">👓 Falta ${grau - grife} Grife (1:1 c/ Grau)</div>`);
+        if(grife < grau) html.push(`<div class="loss-item">👓 Falta ${grau - grife} Solar (1:1 c/ Grau)</div>`);
         if(kit < totalOculos) html.push(`<div class="loss-item">🧴 Falta ${totalOculos - kit} Kit (1 por óculos)</div>`);
         if(seguro < totalOculos) html.push(`<div class="loss-item">🛡️ Falta ${totalOculos - seguro} Seguro (1 por óculos)</div>`);
         
