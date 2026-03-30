@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VISION LINE ALTA PERFORMANCE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="https://img.icons8.com/emoji/48/high-voltage.png" type="image/png">
+    <style>
+        :root { --primary: #1a2a3a; --gold: #D4AF37; --success: #27ae60; --danger: #d9534f; --bg: #f4f7f6; --white: #ffffff; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; padding-bottom: 30px; }
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        .login-box { background: var(--white); padding: 40px; border-radius: 12px; text-align: center; width: 90%; max-width: 350px; }
+        header { background: var(--primary); color: white; padding: 20px; text-align: center; }
+        .tabs { display: flex; background: var(--white); border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; justify-content: center; }
+        .tab-btn { background: none; border: none; padding: 15px 25px; cursor: pointer; font-weight: 600; color: #666; font-size: 0.85rem; }
+        .tab-btn.active { color: var(--gold); border-bottom: 3px solid var(--gold); }
+        .container { max-width: 600px; margin: 20px auto; padding: 0 15px; }
+        .card { background: var(--white); padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .card h3 { margin-top: 0; font-size: 1.1rem; color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
+        .points-display { text-align: center; }
+        .points-val { font-size: 2.8rem; font-weight: bold; color: var(--primary); }
+        .progress-container { background: #eee; height: 12px; border-radius: 10px; margin: 15px 0; overflow: hidden; }
+        .progress-bar { background: var(--gold); height: 100%; width: 0%; transition: width 1s ease; }
+        .progress-bar-global { background: var(--primary); height: 100%; width: 0%; transition: width 1s ease; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 5px; color: #555; }
+        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        .btn-main { background: var(--primary); color: white; margin-top: 15px; }
+        .btn-outline { background: none; border: 1px solid var(--primary); color: var(--primary); padding: 8px; font-size: 0.8rem; margin-top: 10px; }
+        .loss-item { background: #fff5f5; border-left: 4px solid var(--danger); padding: 10px; margin-bottom: 8px; font-size: 0.85rem; color: #a94442; }
+        .success-msg { color: var(--success); font-weight: bold; text-align: center; padding: 10px; }
+        #main-app { display: none; }
+        .meta-valor-trava { font-size: 1.5rem; font-weight: bold; color: var(--success); text-align: center; display: block; margin: 10px 0; }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="login-box">
+            <h2 style="margin-top:0;">Acesso Vision Line Painel</h2>
+            <input type="text" id="loginConsultor" placeholder="Seu Nome" class="login-input">
+            <input type="text" id="loginOtica" placeholder="Sua Unidade" class="login-input" style="margin-top:10px;">
+            <button class="btn btn-main" onclick="realizarLogin()">ENTRAR</button>
+        </div>
+    </div>
+
+    <div id="main-app">
+        <header>
+            <h1 style="margin:0; font-size:1.3rem;">Olá, <span id="uNomeHeader"></span></h1>
+            <small id="uOticaHeader"></small>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'aba-vendas')">DIÁRIO</button>
+            <button class="tab-btn" onclick="openTab(event, 'aba-global')">META EQUIPE</button>
+            <button class="tab-btn" onclick="openTab(event, 'aba-perfil')">PERFIL</button>
+        </nav>
+
+        <div class="container">
+            <div id="aba-vendas" class="tab-content">
+                
+                <div class="card">
+                    <h3>Meus Pontos (Qualificação: 30.000)</h3>
+                    <div class="points-display">
+                        <div class="points-val" id="viewPontos">0</div>
+                        <div class="progress-container"><div id="bar-points" class="progress-bar"></div></div>
+                        <small id="txt-falta" style="color: var(--gold); font-weight: bold;"></small>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Minha Meta Mensal</h3>
+                    
+                    <div id="setup-meta">
+                        <label>Defina sua Meta (R$)</label>
+                        <input type="number" id="inputMeta" placeholder="Ex: 50000">
+                        <button class="btn btn-main" onclick="salvarMeta()">TRAVAR META</button>
+                    </div>
+
+                    <div id="box-alterar-meta" style="display:none; text-align: center;">
+                        <span id="txtMetaMensalExibicao" class="meta-valor-trava">R$ 0,00</span>
+                        <button class="btn btn-outline" onclick="resetarMeta()">Alterar Meta</button>
+                    </div>
+
+                    <div class="grid-2" style="margin-top:20px; border-top: 1px solid #eee; padding-top: 15px;">
+                        <div style="text-align:center;"><label>Acumulado</label><div id="viewAcumulado" style="font-weight:bold;">R$ 0</div></div>
+                        <div style="text-align:center;"><label>Meta Diária Recom.</label><div id="metaDiariaSug" style="font-weight:bold; color:var(--success);">R$ 0</div></div>
+                    </div>
+                    <div style="text-align: center; margin-top: 10px;">
+                        <small id="txtDiasFaltam" style="color: #666;"></small>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Registro Diário</h3>
+                    <div class="grid-2" style="margin-bottom:15px;">
+                        <div><label>Atendidos</label><input type="number" id="atendidos" oninput="calcTudo()"></div>
+                        <div><label>Compraram</label><input type="number" id="compraram" oninput="calcTudo()"></div>
+                    </div>
+                    <label>Venda Realizada Hoje (R$)</label>
+                    <input type="number" id="vendaDia" oninput="calcTudo()" style="font-weight:bold; border-color:var(--gold);">
+                    
+                    <h4 style="margin:20px 0 10px 0; font-size:0.9rem;">Produtos (Regra 1:1)</h4>
+                    <div class="grid-2">
+                        <input type="number" id="pGrau" placeholder="Óculos Grau" oninput="calcTudo()">
+                        <input type="number" id="pSolar" placeholder="Óculos Solar" oninput="calcTudo()">
+                        <input type="number" id="pKit" placeholder="Kits Limpa" oninput="calcTudo()">
+                        <input type="number" id="pGrife" placeholder="Armação Grife" oninput="calcTudo()">
+                        <input type="number" id="pGrife" placeholder="Armação Propria" oninput="calcTudo()">
+                        <input type="number" id="pSeguro" placeholder="Seguros" oninput="calcTudo()">
+                    </div>
+                    <button class="btn btn-main" onclick="enviarDados()">SALVAR REGISTRO</button>
+                </div>
+
+                <div class="card">
+                    <h3>Análise de Perdas</h3>
+                    <div id="analisePerdas">Aguardando dados...</div>
+                </div>
+            </div>
+
+            <div id="aba-global" class="tab-content" style="display:none;">
+                <div class="card" style="background: #fdf6e3; border: 1px solid var(--gold); text-align: center;">
+                    <h3>Meta Global da Equipe</h3>
+                    <div id="totalGlobalPts" style="font-size: 2.2rem; font-weight: bold; color: var(--primary);">0 / 300.000</div>
+                    <div class="progress-container" style="background: #e9ecef; height: 18px;"><div id="bar-global" class="progress-bar-global"></div></div>
+                    <p style="font-size: 0.85rem; color: #856404; font-weight: bold;">PRÊMIO R$ 1.000,00 LIBERADO AOS 300 MIL PONTOS!</p>
+                </div>
+            </div>
+
+            <div id="aba-perfil" class="tab-content" style="display:none;">
+                <div class="card">
+                    <p>Consultor: <b id="uNome"></b></p>
+                    <p>Unidade: <b id="uOtica"></b></p>
+                    <button class="btn" style="background:var(--danger); color:white; margin-top:20px;" onclick="logout()">SAIR / TROCAR USUÁRIO</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const API = 'https://script.google.com/macros/s/AKfycbxOBszumx0-dxL1VjgQJNlslxaCyMyvCUn8EWjargQqGwx0xzjT-q99njIM2ST1xLdWdg/exec'; 
+    let user = "";
+    let diasUteisRestantes = 26; // Valor padrão caso a API falhe
+
+    document.addEventListener('DOMContentLoaded', () => {
+        checkLogin();
+        verificarMetaSalva();
+    });
+
+    // --- LOGICA DE TABS ---
+    function openTab(e, name) {
+        document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(name).style.display = 'block';
+        if(e) e.currentTarget.classList.add('active');
+    }
+
+    // --- LOGIN E PERMISSÕES ---
+    function checkLogin() {
+        user = localStorage.getItem('ammo_user');
+        if (user) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-app').style.display = 'block';
+            document.getElementById('uNome').innerText = user;
+            document.getElementById('uNomeHeader').innerText = user;
+            document.getElementById('uOticaHeader').innerText = localStorage.getItem('ammo_otica');
+            loadData();
+        }
+    }
+
+    function realizarLogin() {
+        const n = document.getElementById('loginConsultor').value;
+        const o = document.getElementById('loginOtica').value;
+        if(n && o) { 
+            localStorage.setItem('ammo_user', n); 
+            localStorage.setItem('ammo_otica', o); 
+            location.reload(); 
+        }
+    }
+
+    // --- LÓGICA DA META TRAVADA ---
+    function verificarMetaSalva() {
+        const metaSalva = localStorage.getItem(`meta_travada_${user}`);
+        const divSetup = document.getElementById('setup-meta');
+        const boxAlterar = document.getElementById('box-alterar-meta');
+        const txtExibicao = document.getElementById('txtMetaMensalExibicao');
+        
+        if (metaSalva) {
+            divSetup.style.display = 'none';
+            boxAlterar.style.display = 'block';
+            txtExibicao.innerText = parseFloat(metaSalva).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            calcTudo();
+        } else {
+            divSetup.style.display = 'block';
+            boxAlterar.style.display = 'none';
+        }
+    }
+
+    function salvarMeta() {
+        const valor = document.getElementById('inputMeta').value;
+        if (valor && valor > 0) {
+            localStorage.setItem(`meta_travada_${user}`, valor);
+            verificarMetaSalva();
+        } else {
+            alert("Por favor, digite um valor válido.");
+        }
+    }
+
+    function resetarMeta() {
+        if(confirm("Deseja definir uma nova meta mensal?")) {
+            localStorage.removeItem(`meta_travada_${user}`);
+            document.getElementById('inputMeta').value = '';
+            verificarMetaSalva();
+        }
+    }
+
+    // --- DADOS E CÁLCULOS ---
+    async function loadData() {
+        if(!user) return;
+        try {
+            const r = await fetch(`${API}?consultor=${encodeURIComponent(user)}`);
+            const d = await r.json();
+            
+            localStorage.setItem(`acum_${user}`, d.acumulado || 0);
+            localStorage.setItem(`pts_acum_${user}`, d.pontosTotais || 0);
+            diasUteisRestantes = parseInt(d.diasRestantes) || 26;
+            
+            document.getElementById('txtDiasFaltam').innerText = `${diasUteisRestantes} dias úteis restantes`;
+
+            const globalPts = d.totalEquipe || 0;
+            document.getElementById('totalGlobalPts').innerText = `${globalPts.toLocaleString()} / 300.000`;
+            document.getElementById('bar-global').style.width = Math.min((globalPts / 300000) * 100, 100) + '%';
+            
+            calcTudo();
+        } catch(e) { console.error("Erro na carga:", e); }
+    }
+
+    function calcTudo() {
+        const meta = parseFloat(localStorage.getItem(`meta_travada_${user}`) || 0);
+        const vendaHoje = parseFloat(document.getElementById('vendaDia').value || 0);
+        const acumVendasHist = parseFloat(localStorage.getItem(`acum_${user}`) || 0);
+        const acumPtsHist = parseFloat(localStorage.getItem(`pts_acum_${user}`) || 0);
+        
+        const totalVendas = acumVendasHist + vendaHoje;
+        const bonusHoje = vendaHoje > 0 ? 10 : 0;
+        const totalPontos = acumPtsHist + Math.floor(vendaHoje) + bonusHoje;
+        
+        // UI Pontos
+        document.getElementById('viewPontos').innerText = totalPontos.toLocaleString();
+        document.getElementById('bar-points').style.width = Math.min((totalPontos/30000)*100, 100) + '%';
+        
+        const txtFalta = document.getElementById('txt-falta');
+        if(totalPontos >= 30000) {
+            txtFalta.innerText = "QUALIFICADO PARA O PRÊMIO! 🏆";
+            txtFalta.style.color = "var(--success)";
+        } else {
+            txtFalta.innerText = `Faltam ${(30000 - totalPontos).toLocaleString()} pts para qualificação!`;
+            txtFalta.style.color = "var(--gold)";
+        }
+
+        // UI Financeira
+        document.getElementById('viewAcumulado').innerText = `R$ ${totalVendas.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+        const faltante = meta - totalVendas;
+        const metaDiaria = faltante > 0 ? (faltante / diasUteisRestantes) : 0;
+        document.getElementById('metaDiariaSug').innerText = `R$ ${metaDiaria.toLocaleString('pt-BR', {maximumFractionDigits:0})}`;
+
+        // Regras de Perdas 1:1
+        const atend = parseInt(document.getElementById('atendidos').value || 0);
+        const comp = parseInt(document.getElementById('compraram').value || 0);
+        const nComp = atend - comp;
+        const grau = parseInt(document.getElementById('pGrau').value || 0);
+        const solar = parseInt(document.getElementById('pSolar').value || 0);
+        const kit = parseInt(document.getElementById('pKit').value || 0);
+        const grife = parseInt(document.getElementById('pGrife').value || 0);
+        const seguro = parseInt(document.getElementById('pSeguro').value || 0);
+        const totalOculos = grau + solar;
+
+        let html = [];
+        if(nComp > 0) html.push(`<div class="loss-item">📉 R$ ${(nComp * 500).toLocaleString('pt-BR')} perdidos (${nComp} s/ compra)</div>`);
+        if(grife < grau) html.push(`<div class="loss-item">👓 Falta ${grau - grife} Grife (1:1 c/ Grau)</div>`);
+        if(kit < totalOculos) html.push(`<div class="loss-item">🧴 Falta ${totalOculos - kit} Kit (1 por óculos)</div>`);
+        if(seguro < totalOculos) html.push(`<div class="loss-item">🛡️ Falta ${totalOculos - seguro} Seguro (1 por óculos)</div>`);
+        
+        document.getElementById('analisePerdas').innerHTML = html.length ? html.join('') : '<div class="success-msg">⭐ PERFORMANCE 100%!</div>';
+    }
+
+    async function enviarDados() {
+        const btn = event.target;
+        btn.disabled = true; btn.innerText = "Sincronizando...";
+        
+        const data = {
+            consultor: user,
+            unidade: localStorage.getItem('ammo_otica'),
+            vendasDia: document.getElementById('vendaDia').value,
+            atendidos: document.getElementById('atendidos').value,
+            compraram: document.getElementById('compraram').value,
+            prod: {
+                grau: document.getElementById('pGrau').value || 0,
+                solar: document.getElementById('pSolar').value || 0,
+                kit: document.getElementById('pKit').value || 0,
+                grife: document.getElementById('pGrife').value || 0,
+                seguro: document.getElementById('pSeguro').value || 0
+            }
+        };
+
+        try {
+            await fetch(API, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+            alert("Sucesso! Você ganhou +10 pontos bônus.");
+            window.open(`https://wa.me/5544999610278?text=Realizei minha tarefa diária e quero resgatar meus pontos.`, '_blank');
+            document.querySelectorAll('.card input').forEach(i => { if(i.id !== 'inputMeta') i.value = ''; });
+            loadData();
+        } catch(e) { alert("Erro ao salvar dados."); }
+        
+        btn.disabled = false; btn.innerText = "SALVAR REGISTRO";
+    }
+
+    function logout() { localStorage.clear(); location.reload(); }
+</script>
+</body>
+</html>
